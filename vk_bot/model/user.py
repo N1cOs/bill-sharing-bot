@@ -1,7 +1,12 @@
-from vk_bot.app import Base
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
+
+from vk_bot.app import Base
 from .city import City
+
+user_debt = Table('user_debt', Base.metadata,
+                  Column('user_id', Integer, ForeignKey('app_user.id')),
+                  Column('debt_id', Integer, ForeignKey('debt.id')))
 
 
 class User(Base):
@@ -11,9 +16,10 @@ class User(Base):
     first_name = Column(String(50), nullable=False)
     second_name = Column(String(60), nullable=False)
     gender = Column(String(1), nullable=False)
-    city_id = Column(Integer, ForeignKey('city.id'))
+    id_city = Column(Integer, ForeignKey('city.id'))
 
-    city = relationship('City', back_populates='users')
+    city = relationship('City', back_populates='users', lazy='raise')
+    debts = relationship('Debt', secondary=user_debt, lazy='raise')
 
     def __init__(self, first_name: str, second_name: str, gender: str,
                  id: int = None, city: City = None):
@@ -25,4 +31,4 @@ class User(Base):
 
     def __repr__(self):
         return 'User("{}", "{}", "{}", {}, {})'.\
-            format(self.first_name, self.second_name, self.gender, self.id, self.city_id)
+            format(self.first_name, self.second_name, self.gender, self.id, self.id_city)
