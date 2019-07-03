@@ -10,3 +10,6 @@ class Config:
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    VK_TOKEN = getenv('VK_TOKEN')
+    VK_API_VERSION = '5.95'
+
