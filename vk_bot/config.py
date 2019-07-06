@@ -1,8 +1,10 @@
 from os import getenv
+from pathlib import Path
 
 
 class Config:
     DEBUG = False
+    LOCALE_DIR = Path(__file__).parent.parent.joinpath('locales')
 
     DB_USER = getenv('POSTGRES_USER')
     DB_PASSWORD = getenv('POSTGRES_PASSWORD')
