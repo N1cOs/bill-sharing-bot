@@ -17,8 +17,8 @@ class OweHandler:
     @staticmethod
     def handle(match, key):
         try:
-            debtors = re.split(r',|(?<=\])\s+(?=\[)', match.group('debtors'))
-            debtors_id = [Util.parse_user_id(d.strip()) for d in debtors]
+            debtors = Util.parse_options(match.group('debtors'))
+            debtors_id = list({Util.parse_user_id(d.strip()) for d in debtors})
 
             user = match.group('user')
             lender_id = Util.parse_user_id(user) if user else key.from_id
@@ -34,6 +34,8 @@ class OweHandler:
             name = match.group('name')
 
             return cmd.handle_owe(key, lender_id, debtors_id, amount, period, name)
+        except SyntaxException:
+            raise
         except Exception as e:
             print(e)
             raise SyntaxException('Error occurred while parsing. Check format')
