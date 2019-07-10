@@ -10,7 +10,7 @@ class Util:
 
     @staticmethod
     def parse_options(text):
-        return re.split(r',|(?<=\])\s+(?=\[)', text)
+        return re.split(r'\s?[\s,]\s?', text.strip())
 
 
 class Key:
