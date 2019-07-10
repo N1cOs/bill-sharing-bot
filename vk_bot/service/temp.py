@@ -1,14 +1,14 @@
 import json
 import re
-from datetime import timedelta, datetime
 from calendar import monthrange
+from datetime import timedelta, datetime
 
 import vk_bot.service.commands as cmd
 from vk_bot.app import redis
+from vk_bot.config import Config
+from vk_bot.exceptions import SyntaxException
 from vk_bot.model import DebtWrapper
 from .util import Temp, State, Util
-from vk_bot.exceptions import SyntaxException
-from vk_bot.config import Config
 
 
 def is_temp_state(key):
@@ -49,7 +49,7 @@ def temp_owe(key, data, options):
 
 
 HANDLERS = {State.OWE_PERIOD: temp_owe}
-OPTIONS_REGEX = re.compile(r'^((\d+?(\s?,\s?))*?)(\d+)$')
+OPTIONS_REGEX = re.compile(r'^((\d+?(\s?[,\s]\s?))*?)(\d+)$')
 
 
 def handle(key, temp, text):
