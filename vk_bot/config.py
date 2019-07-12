@@ -5,7 +5,7 @@ from pathlib import Path
 class Config:
     DEBUG = False
     LOCALE_DIR = Path(__file__).parent.parent.joinpath('locales')
-    DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
+    DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     REDIS_PASSWORD = getenv('REDIS_PASSWORD')
 
