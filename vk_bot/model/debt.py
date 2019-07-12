@@ -13,7 +13,7 @@ class Debt(db.Model):
     id_conversation = db.Column(db.Integer)
 
     is_current = db.Column(db.Boolean, default=False)
-    period = db.Column(db.Integer, default=0)
+    is_monthly = db.Column(db.Boolean, default=False)
 
     debtors = db.relationship('User', secondary=user_debt)
     lender = db.relationship('User')
@@ -24,13 +24,13 @@ class Debt(db.Model):
 
 
 class DebtWrapper:
-    def __init__(self, id_lender, name, debtors, amount, period,
-                 date, id_conversation, is_current=False):
+    def __init__(self, id_lender, name, debtors, amount,
+                 date, id_conversation, is_monthly=False, is_current=False):
         self.id_lender = id_lender
         self.name = name
         self.debtors = debtors
         self.amount = amount
-        self.period = period
+        self.is_monthly = is_monthly
         self.date = date
         self.id_conversation = id_conversation
         self.is_current = is_current
