@@ -28,10 +28,12 @@ def handle():
             if temp:
                 return t.handle(key, temp, text)
 
-            for handler in HANDLERS:
-                match = handler.match(text)
+            for Handler in HANDLERS:
+                match = Handler.match(text)
                 if match:
-                    return handler.handle(match, key)
+                    handler = Handler(match, key)
+                    return handler.handle()
+
             return 'error'
         except SyntaxException as e:
             return e.message
