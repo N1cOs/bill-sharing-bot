@@ -7,11 +7,11 @@ from .util import Util
 
 class OweHandler:
     PATTERN = r'^(?P<debtors>(?:\[.+?\|.+?\]\s*,?\s*)+){}\s(?P<user>\[.+?\|.+?\]\s)?' \
-              r'(?P<amount>\d+?[.,]?\d*?)\s(:?(?P<period>\d+?)\s)?(?P<name>.+)$'
+              r'(?P<amount>\d+?[.,]?\d*?)\s(:?(?P<period>{})\s)?(?P<name>.+)$'
 
     @staticmethod
     def match(text):
-        pattern = OweHandler.PATTERN.format(_('cmd.owe'))
+        pattern = OweHandler.PATTERN.format(_('cmd.owe'), _('monthly'))
         return re.match(pattern, text)
 
     @staticmethod
@@ -28,12 +28,12 @@ class OweHandler:
 
             period = match.group('period')
             if period is None:
-                period = 0
+                is_monthly = False
             else:
-                period = int(period)
+                is_monthly = True
             name = match.group('name')
 
-            return cmd.handle_owe(key, lender_id, debtors_id, amount, period, name)
+            return cmd.handle_owe(key, lender_id, debtors_id, amount, is_monthly, name)
         except SyntaxException:
             raise
         except Exception as e:

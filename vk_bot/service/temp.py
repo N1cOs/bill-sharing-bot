@@ -1,7 +1,6 @@
 import json
 import re
-from calendar import monthrange
-from datetime import timedelta, datetime
+from datetime import datetime
 
 import vk_bot.service.commands as cmd
 from vk_bot.app import redis
@@ -20,32 +19,25 @@ def is_temp_state(key):
 
 def temp_owe(key, data, options):
     """0 - current period, 1 - next period"""
-    if len(options) == 1:
-        option = int(options[0])
+    if len(options) != 1:
+        raise SyntaxException('Invalid option')
 
-        wrapper = DebtWrapper(**data)
-        wrapper.is_current = True
-        wrapper.date = datetime.strptime(wrapper.date, Config.DATETIME_FORMAT)
+    option = int(options[0])
+    if option not in [0, 1]:
+        raise SyntaxException('Invalid option')
 
-        if option == 1:
-            if wrapper.period == 30:
-                _, days = monthrange(wrapper.date.year, wrapper.date.month)
-                delta = days - wrapper.date.day + 1
-                wrapper.date += timedelta(days=delta)
-            else:
-                wrapper.date += timedelta(days=wrapper.period)
-        elif option == 0:
-            if wrapper.period == 30:
-                delta = wrapper.date.day - 1
-                wrapper.date -= timedelta(days=delta)
-            else:
-                wrapper.date -= timedelta(days=wrapper.period)
-        else:
-            raise SyntaxException('Invalid option')
+    wrapper = DebtWrapper(**data, is_current=True, is_monthly=True)
+    wrapper.date = datetime.strptime(wrapper.date, Config.DATETIME_FORMAT)
 
-        redis.delete(repr(key))
-        return cmd.save_debt(wrapper)
-    raise SyntaxException('Invalid option')
+    month, year = wrapper.date.month + option, wrapper.date.year
+    if month == 13:
+        month = 1
+        year += 1
+
+    wrapper.date = datetime(day=1, month=month, year=year)
+    redis.delete(repr(key))
+
+    return cmd.save_debt(wrapper)
 
 
 HANDLERS = {State.OWE_PERIOD: temp_owe}
