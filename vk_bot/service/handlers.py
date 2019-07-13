@@ -50,3 +50,18 @@ class OweHandler(Handler):
         name = match.group('name')
 
         return cmd.handle_owe(key, lender_id, debtors_id, amount, is_monthly, name)
+
+
+class PayHandler(Handler):
+    PATTERN = r'^(?P<user>\[.+?\|.+?\]\s)?{}$'
+
+    @staticmethod
+    def match(text):
+        pattern = PayHandler.PATTERN.format(_('cmd.pay'))
+        return re.match(pattern, text)
+
+    def handle_cmd(self, match, key):
+        lender = match.group('user')
+        id_lender = Util.parse_user_id(lender) if lender else None
+
+        return cmd.handle_pay(id_lender, key)

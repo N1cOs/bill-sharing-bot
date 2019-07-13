@@ -1,6 +1,9 @@
 import json
 from datetime import datetime, timedelta
 
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.exc import NoResultFound
+
 import vk_bot.model as md
 from vk_bot.app import redis, db
 from vk_bot.config import Config
@@ -41,6 +44,7 @@ def save_debt(wrapper):
 
     db.session.add(debt)
     db.session.commit()
+    # ToDo: add sending messages for confirmation
     return 'debt was saved'
 
 
@@ -64,3 +68,45 @@ def get_users(id_lender, id_debtors):
     lender = users.pop(lender_index)
 
     return lender, users
+
+
+def handle_pay(id_lender, key):
+    try:
+        if id_lender:
+            if key.peer_id == key.from_id:
+                user = md.User.query.options(joinedload(md.User.debts)) \
+                    .filter(md.User.id == key.from_id) \
+                    .filter(md.Debt.id_lender == id_lender) \
+                    .one()
+            else:
+                user = md.User.query.options(joinedload(md.User.debts)) \
+                    .filter(md.User.id == key.from_id) \
+                    .filter(md.Debt.id_lender == id_lender) \
+                    .filter(md.Debt.id_conversation == key.peer_id) \
+                    .one()
+        else:
+            if key.peer_id == key.from_id:
+                user = md.User.query.options(joinedload(md.User.debts)) \
+                    .filter(md.User.id == key.from_id) \
+                    .one()
+            else:
+                user = md.User.query.options(joinedload(md.User.debts)) \
+                    .filter(md.User.id == key.from_id) \
+                    .filter(md.Debt.id_conversation == key.peer_id) \
+                    .one()
+    except NoResultFound:
+        raise SyntaxException(_('exception.no_debts'))
+    else:
+        users = md.User.query.filter(md.User.id.in_({d.id_lender for d in user.debts})).all()
+        users = {u.id: '{} {}'.format(u.first_name, u.second_name) for u in users}
+
+        debts, lines = {}, []
+        for index, debt in enumerate(user.debts, 1):
+            lines.append('{}.{}'.format(index, debt.info(users[debt.id_lender])))
+            debts[index] = debt.id
+
+        data = {'state': State.PAY.value, 'data': debts}
+        redis.set(repr(key), json.dumps(data), ex=timedelta(days=1))
+
+        text = '\n{}\n'.format(50 * '-').join(lines)
+        return _('debts.info').format(text)

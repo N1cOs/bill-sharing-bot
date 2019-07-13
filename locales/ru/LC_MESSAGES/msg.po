@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-13 00:31+0300\n"
+"POT-Creation-Date: 2019-07-13 23:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,3 +24,84 @@ msgstr "должен"
 #: vk_bot/service/handlers.py:14
 msgid "monthly"
 msgstr "ежемесячно"
+
+#: vk_bot/service/handlers.py:49
+msgid "cmd.pay"
+msgstr "заплатить"
+
+#: vk_bot/model/debt.py:27
+msgid "debt.info.monthly"
+msgstr ""
+"Название: {}\n"
+"Дата: {}\n"
+"Период: {}\n"
+"Сумма: {}\n"
+"Одолжил: [id{}|{}]"
+
+#: vk_bot/model/debt.py:28
+msgid "debt.info.once"
+msgstr ""
+"Название: {}\n"
+"Дата: {}\n"
+"Сумма: {}\n"
+"Одолжил: [id{}|{}]"
+
+#: vk_bot/service/handlers.py:28
+msgid "January"
+msgstr "Январь"
+
+#: vk_bot/service/handlers.py:28
+msgid "February"
+msgstr "Февраль"
+
+#: vk_bot/service/handlers.py:28
+msgid "March"
+msgstr "Март"
+
+#: vk_bot/service/handlers.py:28
+msgid "April"
+msgstr "Апрель"
+
+#: vk_bot/service/handlers.py:28
+msgid "May"
+msgstr "Май"
+
+#: vk_bot/service/handlers.py:28
+msgid "June"
+msgstr "Июнь"
+
+#: vk_bot/service/handlers.py:28
+msgid "July"
+msgstr "Июль"
+
+#: vk_bot/service/handlers.py:28
+msgid "August"
+msgstr "Август"
+
+#: vk_bot/service/handlers.py:28
+msgid "September"
+msgstr "Сентябрь"
+
+#: vk_bot/service/handlers.py:28
+msgid "October"
+msgstr "Октябрь"
+
+#: vk_bot/service/handlers.py:28
+msgid "November"
+msgstr "Ноябрь"
+
+#: vk_bot/service/handlers.py:28
+msgid "December"
+msgstr "Декабрь"
+
+#: vk_bot/service/commands.py:107 vk_bot/service/commands.py:111
+msgid "debts.info"
+msgstr ""
+"Введите номера долгов, которые хотите погасить. Номера долгов можете вводить "
+"через пробел или через запятую. Если введете 0, то это будет означать выбор "
+"всех долгов.\n"
+"{}"
+
+#: vk_bot/service/commands.py:97
+msgid "exception.no_debts"
+msgstr "Долгов не найдено"
