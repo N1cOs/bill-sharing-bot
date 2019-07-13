@@ -41,6 +41,7 @@ def temp_owe(key, data, options):
 
 
 HANDLERS = {State.OWE_PERIOD: temp_owe}
+
 OPTIONS_REGEX = re.compile(r'^((\d+?(\s?[,\s]\s?))*?)(\d+)$')
 
 
@@ -48,7 +49,7 @@ def handle(key, temp, text):
     match = OPTIONS_REGEX.match(text)
     if match:
         options = Util.parse_options(text)
-        for state, handler in HANDLERS.items():
-            if temp.state == state.value:
-                return handler(key, temp.data, options)
+        handler = HANDLERS.get(State(temp.state))
+        if handler:
+            return handler(key, temp.data, options)
     raise SyntaxException('Invalid format for options')
