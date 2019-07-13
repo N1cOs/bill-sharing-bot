@@ -1,3 +1,4 @@
+import calendar
 from datetime import datetime
 
 from vk_bot.app import db
@@ -21,6 +22,15 @@ class Debt(db.Model):
     def __repr__(self):
         return 'Debt("{}", {}, {}, {}, {})'.format(self.name, self.date, self.amount,
                                                    self.id_lender, self.id_conversation)
+
+    def info(self, lender_name):
+        if self.is_monthly:
+            month = _(calendar.month_name[self.date.month])
+            return _('debt.info.monthly').format(self.name, self.date, month, self.amount,
+                                                 self.id_lender, lender_name)
+
+        return _('debt.info.once').format(self.name, self.date, self.amount,
+                                          self.id_lender, lender_name)
 
 
 class DebtWrapper:
