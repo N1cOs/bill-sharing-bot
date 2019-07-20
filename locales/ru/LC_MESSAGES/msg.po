@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-13 23:32+0300\n"
+"POT-Creation-Date: 2019-07-20 15:23+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,6 +95,7 @@ msgid "December"
 msgstr "Декабрь"
 
 #: vk_bot/service/commands.py:107 vk_bot/service/commands.py:111
+#: vk_bot/service/commands.py:112
 msgid "debts.info"
 msgstr ""
 "Введите номера долгов, которые хотите погасить. Номера долгов можете вводить "
@@ -102,6 +103,35 @@ msgstr ""
 "всех долгов.\n"
 "{}"
 
-#: vk_bot/service/commands.py:97
+#: vk_bot/service/commands.py:97 vk_bot/service/commands.py:98
 msgid "exception.no_debts"
 msgstr "Долгов не найдено"
+
+#: vk_bot/service/commands.py:16
+msgid "exception.amount"
+msgstr "Сумма долга должна быть больше или равна 1"
+
+#: vk_bot/service/commands.py:19
+msgid "exception.owe_himself"
+msgstr "Пользователь не может задолжать самому себе"
+
+#: vk_bot/service/commands.py:28
+msgid "owe.period"
+msgstr ""
+"В текущий или следующий месяц внести первый платеж? Для текущего периода "
+"отправте цифру 0, для следующего - цифру 1."
+
+#: vk_bot/service/commands.py:33
+msgid "owe.debt.register"
+msgstr ""
+"Информация о долге была зарегестрирована. После того, как все должники "
+"подтвердят данный долг, информация о долге будет полностью сохранена в "
+"системе."
+
+#: vk_bot/service/commands.py:48
+msgid "owe.debt.saved"
+msgstr "Информация о долге успешно сохранена"
+
+#: vk_bot/routes.py:42
+msgid "exception.cmd.not_recognised"
+msgstr "Команда не распознана, проверьте формат"
