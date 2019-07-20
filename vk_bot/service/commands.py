@@ -8,15 +8,15 @@ import vk_bot.model as md
 from vk_bot.app import redis, db
 from vk_bot.config import Config
 from vk_bot.exceptions import SyntaxException
-from .util import State
+from .util import State, Temp, Util
 
 
 def handle_owe(key, id_lender, debtors, amount, is_monthly, name):
     if amount < 1:
-        raise SyntaxException('Amount must be greater than or equal to 1')
+        raise SyntaxException(_('exception.amount'))
 
     if id_lender in debtors:
-        raise SyntaxException('User can\'t be owe to himself')
+        raise SyntaxException(_('exception.owe_himself'))
 
     if is_monthly:
         data = {'state': State.OWE_PERIOD.value, 'data': {
@@ -25,12 +25,12 @@ def handle_owe(key, id_lender, debtors, amount, is_monthly, name):
         }}
 
         redis.set(repr(key), json.dumps(data), ex=timedelta(days=1))
-        return 'current or next month?'
+        return _('owe.period')
     else:
         wrapper = md.DebtWrapper(id_lender, name, debtors, amount,
                                  datetime.now().replace(microsecond=0), key.peer_id)
         save_debt(wrapper)
-        return 'debt was saved'
+        return _('owe.debt.register')
 
 
 def save_debt(wrapper):
@@ -45,7 +45,7 @@ def save_debt(wrapper):
     db.session.add(debt)
     db.session.commit()
     # ToDo: add sending messages for confirmation
-    return 'debt was saved'
+    return _('owe.debt.saved')
 
 
 def get_users(id_lender, id_debtors):
@@ -53,12 +53,15 @@ def get_users(id_lender, id_debtors):
     ids.append(id_lender)
     users = md.User.query.filter(md.User.id.in_(ids)).all()
 
-    for id in ids:
-        if not any(id == u.id for u in users):
-            # ToDo: calling vk api
-            print('call vk api')
-            user = md.User(id=id, first_name='user', second_name='user', gender='M')
-            users.append(user)
+    new_user_ids = [id for id in ids if id not in (u.id for u in users)]
+    for new_user in Util.get_users_info(new_user_ids):
+        user = md.User(id=new_user['id'], first_name=new_user['first_name'], second_name=new_user['last_name'])
+        user.gender = 'M' if new_user['sex'] == 2 else 'F'
+
+        city = new_user.get('city')
+        if city:
+            user.city = md.City(id=city['id'], name=city['title'])
+        users.append(user)
 
     lender_index = 0
     for i in range(len(users)):
@@ -100,13 +103,13 @@ def handle_pay(id_lender, key):
         users = md.User.query.filter(md.User.id.in_({d.id_lender for d in user.debts})).all()
         users = {u.id: '{} {}'.format(u.first_name, u.second_name) for u in users}
 
-        debts, lines = {}, []
+        debts, lines = [], []
         for index, debt in enumerate(user.debts, 1):
             lines.append('{}.{}'.format(index, debt.info(users[debt.id_lender])))
-            debts[index] = debt.id
+            debts.append(debt.id)
 
-        data = {'state': State.PAY.value, 'data': debts}
-        redis.set(repr(key), json.dumps(data), ex=timedelta(days=1))
+        temp = Temp(State.PAY.value, debts)
+        redis.set(repr(key), json.dumps(vars(temp)), ex=timedelta(days=1))
 
         text = '\n{}\n'.format(50 * '-').join(lines)
         return _('debts.info').format(text)
