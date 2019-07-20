@@ -1,6 +1,10 @@
 import re
 from enum import Enum, auto
 
+from vk_api.utils import get_random_id
+
+from vk_bot.app import vk
+
 
 class Util:
     @staticmethod
@@ -11,6 +15,11 @@ class Util:
     @staticmethod
     def parse_options(text):
         return re.split(r'\s?[\s,]\s?', text.strip())
+
+    @staticmethod
+    def send_message(peer_id, text):
+        random_id = get_random_id()
+        vk.method('messages.send', {'peer_id': peer_id, 'random_id': random_id, 'message': text})
 
 
 class Key:
