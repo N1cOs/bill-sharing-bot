@@ -21,6 +21,13 @@ class Util:
         random_id = get_random_id()
         vk.method('messages.send', {'peer_id': peer_id, 'random_id': random_id, 'message': text})
 
+    @staticmethod
+    def get_users_info(user_ids):
+        if len(user_ids) > 0:
+            ids = ','.join(list(map(str, user_ids)))
+            return vk.method('users.get', {'user_ids': ids, 'fields': 'sex, city'})
+        return []
+
 
 class Key:
     def __init__(self, peer_id, from_id):
