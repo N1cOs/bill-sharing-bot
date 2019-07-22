@@ -29,31 +29,32 @@ def handle_owe(key, id_lender, debtors, amount, is_monthly, name):
     else:
         wrapper = md.DebtWrapper(id_lender, name, debtors, amount,
                                  datetime.now().replace(microsecond=0), key.peer_id)
-        save_debt(wrapper)
-        return _('owe.debt.register')
+        return register_debt(wrapper)
 
 
-def save_debt(wrapper):
-    lender, debtors = get_users(wrapper.id_lender, wrapper.debtors)
-    amount = float(round(wrapper.amount / len(wrapper.debtors), 2))
-    debt = md.Debt(name=wrapper.name, date=wrapper.date, amount=amount, id_conversation=wrapper.id_conversation,
-                   is_current=wrapper.is_current, is_monthly=wrapper.is_monthly)
+def register_debt(wrapper):
+    user_ids = wrapper.debtors[:]
+    user_ids.append(wrapper.id_lender)
+    _check_users(user_ids)
 
-    debt.lender = lender
-    debt.debtors = debtors
+    uuid = Util.get_uuid()
+    wrapper.amount = float(round(wrapper.amount / len(wrapper.debtors), 2))
+    wrapper.date = str(wrapper.date)
+    redis.set('{}:{}'.format(uuid, 'data'), json.dumps(vars(wrapper)), ex=timedelta(days=1))
 
-    db.session.add(debt)
-    db.session.commit()
-    # ToDo: add sending messages for confirmation
-    return _('owe.debt.saved')
+    hl = '{}'.format(50 * '-')
+    text = _('owe.debt.confirm').format(uuid, wrapper.name, wrapper.id_lender, wrapper.id_lender, hl)
+    _send_confirmations(uuid, text, wrapper.debtors)
+
+    return _('owe.debt.register')
 
 
-def get_users(id_lender, id_debtors):
-    ids = id_debtors[:]
-    ids.append(id_lender)
-    users = md.User.query.filter(md.User.id.in_(ids)).all()
+def _check_users(user_ids):
+    users = md.User.query.filter(md.User.id.in_(user_ids)).all()
 
-    new_user_ids = [id for id in ids if id not in (u.id for u in users)]
+    new_user_ids = [id for id in user_ids if id not in (u.id for u in users)]
+    new_users = []
+
     for new_user in Util.get_users_info(new_user_ids):
         user = md.User(id=new_user['id'], first_name=new_user['first_name'], second_name=new_user['last_name'])
         user.gender = 'M' if new_user['sex'] == 2 else 'F'
@@ -61,7 +62,64 @@ def get_users(id_lender, id_debtors):
         city = new_user.get('city')
         if city:
             user.city = md.City(id=city['id'], name=city['title'])
-        users.append(user)
+        new_users.append(user)
+
+    if len(new_users) > 0:
+        db.session.add_all(new_users)
+        db.session.commit()
+
+
+def _send_confirmations(key, text, users):
+    redis.set(key, json.dumps(users), ex=timedelta(days=1))
+    for id_user in users:
+        Util.send_message(id_user, text)
+
+
+def confirm(uuid, id_user):
+    users = redis.get(uuid)
+    if users is None:
+        raise SyntaxException(_('exception.confirm.outdated'))
+
+    users = json.loads(users)
+    if id_user not in users:
+        raise SyntaxException(_('exception.confirm.user_not_found'))
+
+    if len(users) == 1:
+        key = '{}:{}'.format(uuid, 'data')
+        wrapper = redis.get(key)
+        if wrapper is None:
+            raise SyntaxException(_('exception.confirm.outdated'))
+
+        wrapper = md.DebtWrapper(**json.loads(wrapper))
+        message = save_debt(wrapper)
+        Util.send_message(wrapper.id_conversation, message)
+
+        redis.delete(key, uuid)
+    else:
+        users.remove(id_user)
+        redis.set(uuid, json.dumps(users))
+
+    return _('confirm.confirmed')
+
+
+def save_debt(wrapper):
+    lender, debtors = get_users(wrapper.id_lender, wrapper.debtors)
+    debt = md.Debt(name=wrapper.name, date=wrapper.date, amount=wrapper.amount,
+                   id_conversation=wrapper.id_conversation, is_current=wrapper.is_current,
+                   is_monthly=wrapper.is_monthly)
+
+    debt.lender = lender
+    debt.debtors = debtors
+
+    db.session.add(debt)
+    db.session.commit()
+    return _('owe.debt.saved')
+
+
+def get_users(id_lender, id_debtors):
+    ids = id_debtors[:]
+    ids.append(id_lender)
+    users = md.User.query.filter(md.User.id.in_(ids)).all()
 
     lender_index = 0
     for i in range(len(users)):

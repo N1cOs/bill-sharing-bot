@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 15:23+0500\n"
+"POT-Creation-Date: 2019-07-22 22:26+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: vk_bot/service/handlers.py:14
+#: vk_bot/service/handlers.py:14 vk_bot/service/handlers.py:32
 msgid "cmd.owe"
 msgstr "должен"
 
-#: vk_bot/service/handlers.py:14
+#: vk_bot/service/handlers.py:14 vk_bot/service/handlers.py:32
 msgid "monthly"
 msgstr "ежемесячно"
 
-#: vk_bot/service/handlers.py:49
+#: vk_bot/service/handlers.py:49 vk_bot/service/handlers.py:60
 msgid "cmd.pay"
 msgstr "заплатить"
 
@@ -95,7 +95,9 @@ msgid "December"
 msgstr "Декабрь"
 
 #: vk_bot/service/commands.py:107 vk_bot/service/commands.py:111
-#: vk_bot/service/commands.py:112
+#: vk_bot/service/commands.py:112 vk_bot/service/commands.py:155
+#: vk_bot/service/commands.py:167 vk_bot/service/commands.py:174
+#: vk_bot/service/commands.py:173
 msgid "debts.info"
 msgstr ""
 "Введите номера долгов, которые хотите погасить. Номера долгов можете вводить "
@@ -104,34 +106,72 @@ msgstr ""
 "{}"
 
 #: vk_bot/service/commands.py:97 vk_bot/service/commands.py:98
+#: vk_bot/service/commands.py:141 vk_bot/service/commands.py:153
+#: vk_bot/service/commands.py:160 vk_bot/service/commands.py:159
 msgid "exception.no_debts"
 msgstr "Долгов не найдено"
 
-#: vk_bot/service/commands.py:16
+#: vk_bot/service/commands.py:16 vk_bot/service/commands.py:17
 msgid "exception.amount"
 msgstr "Сумма долга должна быть больше или равна 1"
 
-#: vk_bot/service/commands.py:19
+#: vk_bot/service/commands.py:19 vk_bot/service/commands.py:20
 msgid "exception.owe_himself"
 msgstr "Пользователь не может задолжать самому себе"
 
-#: vk_bot/service/commands.py:28
+#: vk_bot/service/commands.py:28 vk_bot/service/commands.py:29
 msgid "owe.period"
 msgstr ""
 "В текущий или следующий месяц внести первый платеж? Для текущего периода "
-"отправте цифру 0, для следующего - цифру 1."
+"отправте цифру 0, для следующего - цифру 1"
 
-#: vk_bot/service/commands.py:33
+#: vk_bot/service/commands.py:33 vk_bot/service/commands.py:34
+#: vk_bot/service/commands.py:49
 msgid "owe.debt.register"
 msgstr ""
 "Информация о долге была зарегестрирована. После того, как все должники "
-"подтвердят данный долг, информация о долге будет полностью сохранена в "
-"системе."
+"подтвердят данный долг, информация будет полностью сохранена в системе"
 
-#: vk_bot/service/commands.py:48
+#: vk_bot/service/commands.py:48 vk_bot/service/commands.py:88
+#: vk_bot/service/commands.py:110 vk_bot/service/commands.py:117
+#: vk_bot/service/commands.py:116
 msgid "owe.debt.saved"
 msgstr "Информация о долге успешно сохранена"
 
 #: vk_bot/routes.py:42
 msgid "exception.cmd.not_recognised"
 msgstr "Команда не распознана, проверьте формат"
+
+#: vk_bot/service/commands.py:49 vk_bot/service/commands.py:46
+msgid "owe.debt.confirm"
+msgstr ""
+"#{}\n"
+"Название: {}\n"
+"Одолжил: [id{}|{}]\n"
+"{}\n"
+"Для подтверждения данного долга отправьте 1 в ответе на это сообщение. На "
+"подтверждение даётся 24 часа, иначе информация о долге будет удалена"
+
+#: vk_bot/service/commands.py:96 vk_bot/service/commands.py:103
+#: vk_bot/service/commands.py:102
+msgid "confirm.confirmed"
+msgstr "Долг подтвержден"
+
+#: vk_bot/service/handlers.py:87
+msgid "exception.confirm.bad_id"
+msgstr ""
+"Произошла ошибка при подтверждении, проверьте отправителя пересылаемого "
+"сообщения"
+
+#: vk_bot/service/handlers.py:90
+msgid "exception.confirm.not_confirmed"
+msgstr "Долг не подтвержден, отправьте в ответе цифру 1 для подтверждения"
+
+#: vk_bot/service/commands.py:82 vk_bot/service/commands.py:91
+#: vk_bot/service/commands.py:81
+msgid "exception.confirm.outdated"
+msgstr "Информация о долге не найдена"
+
+#: vk_bot/service/commands.py:85
+msgid "exception.confirm.user_not_found"
+msgstr "Данный пользователь не должен подтверждать данный долг"

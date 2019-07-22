@@ -1,6 +1,7 @@
 import re
 
 import vk_bot.service.commands as cmd
+from vk_bot.config import Config
 from vk_bot.exceptions import SyntaxException
 from .util import Util
 
@@ -19,7 +20,7 @@ class Handler:
         except SyntaxException:
             raise
         except Exception as e:
-            print(e)
+            print(e.args)
             raise SyntaxException('Error occurred while parsing. Check format')
 
 
@@ -65,3 +66,28 @@ class PayHandler(Handler):
         id_lender = Util.parse_user_id(lender) if lender else None
 
         return cmd.handle_pay(id_lender, key)
+
+
+class ConfirmHandler(Handler):
+    PATTERN = r'\A#(?P<uuid>[abcdef\d]+)$'
+
+    def __init__(self, match, key, text, reply_message):
+        super().__init__(match, key)
+
+        self.text = text
+        self.reply_message = reply_message
+
+    @staticmethod
+    def match(text):
+        return re.match(ConfirmHandler.PATTERN, text, re.MULTILINE)
+
+    def handle_cmd(self, match, key):
+        uuid = match.group('uuid')
+
+        if self.reply_message['from_id'] != (-Config.VK_GROUP_ID):
+            raise SyntaxException(_('exception.confirm.bad_id'))
+
+        if self.text != '1':
+            raise SyntaxException(_('exception.confirm.not_confirmed'))
+
+        return cmd.confirm(uuid, key.from_id)

@@ -24,9 +24,17 @@ def handle():
 
         key = Key(data['peer_id'], data['from_id'])
         temp = t.is_temp_state(key)
+        reply_message = data.get('reply_message')
 
         try:
-            if temp:
+            if reply_message:
+                reply_match = hd.ConfirmHandler.match(reply_message['text'])
+                if reply_match:
+                    handler = hd.ConfirmHandler(reply_match, key, text, reply_message)
+                    message = handler.handle()
+                else:
+                    message = _('exception.cmd.not_recognised')
+            elif temp:
                 message = t.handle(key, temp, text)
             else:
                 for Handler in HANDLERS:
