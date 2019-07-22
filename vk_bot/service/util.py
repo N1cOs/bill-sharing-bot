@@ -1,4 +1,5 @@
 import re
+import uuid
 from enum import Enum, auto
 
 from vk_api.utils import get_random_id
@@ -27,6 +28,10 @@ class Util:
             ids = ','.join(list(map(str, user_ids)))
             return vk.method('users.get', {'user_ids': ids, 'fields': 'sex, city'})
         return []
+
+    @staticmethod
+    def get_uuid():
+        return uuid.uuid1().hex
 
 
 class Key:
