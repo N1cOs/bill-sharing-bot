@@ -75,29 +75,39 @@ def _send_confirmations(key, text, users):
         Util.send_message(id_user, text)
 
 
-def confirm(uuid, id_user):
-    users = redis.get(uuid)
-    if users is None:
-        raise SyntaxException(_('exception.confirm.outdated'))
-
-    users = json.loads(users)
-    if id_user not in users:
-        raise SyntaxException(_('exception.confirm.user_not_found'))
-
-    if len(users) == 1:
-        key = '{}:{}'.format(uuid, 'data')
-        wrapper = redis.get(key)
-        if wrapper is None:
+def confirm(uuids, id_user):
+    users_list = redis.mget(*uuids)
+    for users in users_list:
+        if users is None:
             raise SyntaxException(_('exception.confirm.outdated'))
 
-        wrapper = md.DebtWrapper(**json.loads(wrapper))
-        message = save_debt(wrapper)
-        Util.send_message(wrapper.id_conversation, message)
+    users_list = [json.loads(users) for users in users_list]
+    for users in users_list:
+        if id_user not in users:
+            raise SyntaxException(_('exception.confirm.user_not_found'))
 
-        redis.delete(key, uuid)
-    else:
-        users.remove(id_user)
-        redis.set(uuid, json.dumps(users))
+    del_keys, set_users = [], {}
+    for i in range(len(users_list)):
+        users, uuid = users_list[i], uuids[i]
+        if len(users) == 1:
+            key = '{}:{}'.format(uuid, 'data')
+            wrapper = redis.get(key)
+            if wrapper is None:
+                raise SyntaxException(_('exception.confirm.outdated'))
+
+            wrapper = md.DebtWrapper(**json.loads(wrapper))
+            message = save_debt(wrapper)
+            Util.send_message(wrapper.id_conversation, message)
+
+            del_keys.extend([key, uuid])
+        else:
+            users.remove(id_user)
+            set_users[uuid] = json.dumps(users)
+
+    if len(del_keys) > 0:
+        redis.delete(*del_keys)
+    if len(set_users) > 0:
+        redis.mset(set_users)
 
     return _('confirm.confirmed')
 

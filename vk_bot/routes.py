@@ -24,16 +24,24 @@ def handle():
 
         key = Key(data['peer_id'], data['from_id'])
         temp = t.is_temp_state(key)
+
         reply_message = data.get('reply_message')
+        fwd_messages = data.get('fwd_messages') or []
+        messages = [reply_message] if reply_message else fwd_messages
 
         try:
-            if reply_message:
-                reply_match = hd.ConfirmHandler.match(reply_message['text'])
-                if reply_match:
-                    handler = hd.ConfirmHandler(reply_match, key, text, reply_message)
-                    message = handler.handle()
+            if len(messages) > 0:
+                matches = []
+                for msg in messages:
+                    match = hd.ConfirmHandler.match(msg['text'])
+                    if match:
+                        matches.append(match)
+                    else:
+                        message = _('exception.confirm.bad_forward')
+                        break
                 else:
-                    message = _('exception.cmd.not_recognised')
+                    handler = hd.ConfirmHandler(matches, key, text, messages)
+                    message = handler.handle()
             elif temp:
                 message = t.handle(key, temp, text)
             else:

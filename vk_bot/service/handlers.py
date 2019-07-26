@@ -71,23 +71,25 @@ class PayHandler(Handler):
 class ConfirmHandler(Handler):
     PATTERN = r'\A#(?P<uuid>[abcdef\d]+)$'
 
-    def __init__(self, match, key, text, reply_message):
-        super().__init__(match, key)
+    def __init__(self, matches, key, text, messages):
+        super().__init__(None, key)
 
         self.text = text
-        self.reply_message = reply_message
+        self.messages = messages
+        self.matches = matches
 
     @staticmethod
     def match(text):
         return re.match(ConfirmHandler.PATTERN, text, re.MULTILINE)
 
     def handle_cmd(self, match, key):
-        uuid = match.group('uuid')
-
-        if self.reply_message['from_id'] != (-Config.VK_GROUP_ID):
-            raise SyntaxException(_('exception.confirm.bad_id'))
+        for msg in self.messages:
+            if msg['from_id'] != (-Config.VK_GROUP_ID):
+                raise SyntaxException(_('exception.confirm.bad_id'))
 
         if self.text != '1':
             raise SyntaxException(_('exception.confirm.not_confirmed'))
 
-        return cmd.confirm(uuid, key.from_id)
+        uuids = list({m.group('uuid') for m in self.matches})
+
+        return cmd.confirm(uuids, key.from_id)
