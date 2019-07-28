@@ -45,8 +45,6 @@ class Key:
 
 class State(Enum):
     OWE_PERIOD = auto()
-    DEBT_ACCEPT = auto()
-    PAY_ACCEPT = auto()
 
     PAY = auto()
     SETTLE = auto()
