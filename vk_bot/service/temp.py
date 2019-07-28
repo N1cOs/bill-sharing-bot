@@ -20,11 +20,11 @@ def is_temp_state(key):
 def temp_owe(key, data, options):
     """0 - current period, 1 - next period"""
     if len(options) != 1:
-        raise SyntaxException('Invalid option')
+        raise SyntaxException(_('exception.invalid_option'))
 
     option = int(options[0])
     if option not in [0, 1]:
-        raise SyntaxException('Invalid option')
+        raise SyntaxException(_('exception.invalid_option'))
 
     wrapper = DebtWrapper(**data, is_current=True, is_monthly=True)
     wrapper.date = datetime.strptime(wrapper.date, Config.DATETIME_FORMAT)
@@ -37,7 +37,7 @@ def temp_owe(key, data, options):
     wrapper.date = datetime(day=1, month=month, year=year)
     redis.delete(repr(key))
 
-    return cmd.save_debt(wrapper)
+    return cmd.register_debt(wrapper)
 
 
 HANDLERS = {State.OWE_PERIOD: temp_owe}
@@ -52,4 +52,4 @@ def handle(key, temp, text):
         handler = HANDLERS.get(State(temp.state))
         if handler:
             return handler(key, temp.data, options)
-    raise SyntaxException('Invalid format for options')
+    raise SyntaxException(_('exception.invalid_format'))
