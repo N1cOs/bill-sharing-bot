@@ -3,13 +3,15 @@ import re
 import vk_bot.service.commands as cmd
 from vk_bot.config import Config
 from vk_bot.exceptions import SyntaxException
-from .util import Util
+from .util import Util, Key
 
 
 class Handler:
-    def __init__(self, match, key):
+    def __init__(self, message, match):
+        self.message = message
         self.match = match
-        self.key = key
+
+        self.key = Key(message['peer_id'], message['from_id'])
 
     def handle_cmd(self, match, key):
         pass
@@ -71,12 +73,11 @@ class PayHandler(Handler):
 class ConfirmHandler(Handler):
     PATTERN = r'\A#(?P<uuid>[abcdef\d]+)$'
 
-    def __init__(self, matches, key, text, messages):
-        super().__init__(None, key)
+    def __init__(self, message, matches, messages):
+        super().__init__(message, None)
 
-        self.text = text
-        self.messages = messages
         self.matches = matches
+        self.messages = messages
 
     @staticmethod
     def match(text):
@@ -87,7 +88,7 @@ class ConfirmHandler(Handler):
             if msg['from_id'] != (-Config.VK_GROUP_ID):
                 raise SyntaxException(_('exception.confirm.bad_id'))
 
-        if self.text != '1':
+        if self.message['text'] != '1':
             raise SyntaxException(_('exception.confirm.not_confirmed'))
 
         uuids = list({m.group('uuid') for m in self.matches})

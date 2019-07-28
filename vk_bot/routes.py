@@ -19,14 +19,14 @@ def handle():
     req = json.loads(request.data)
     event_type = req['type']
     if event_type == MESSAGE_NEW:
-        data = req['object']
-        text = re.sub(r'\s{2,}?(?=\S)', ' ', data['text'])
+        in_message = req['object']
+        text = in_message['text'] = re.sub(r'\s{2,}?(?=\S)', ' ', in_message['text'])
 
-        key = Key(data['peer_id'], data['from_id'])
+        key = Key(in_message['peer_id'], in_message['from_id'])
         temp = t.is_temp_state(key)
 
-        reply_message = data.get('reply_message')
-        fwd_messages = data.get('fwd_messages') or []
+        reply_message = in_message.get('reply_message')
+        fwd_messages = in_message.get('fwd_messages') or []
         messages = [reply_message] if reply_message else fwd_messages
 
         try:
@@ -37,26 +37,26 @@ def handle():
                     if match:
                         matches.append(match)
                     else:
-                        message = _('exception.confirm.bad_forward')
+                        reply = _('exception.confirm.bad_forward')
                         break
                 else:
-                    handler = hd.ConfirmHandler(matches, key, text, messages)
-                    message = handler.handle()
+                    handler = hd.ConfirmHandler(in_message, matches, messages)
+                    reply = handler.handle()
             elif temp:
-                message = t.handle(key, temp, text)
+                reply = t.handle(key, temp, text)
             else:
                 for Handler in HANDLERS:
                     match = Handler.match(text)
                     if match:
-                        handler = Handler(match, key)
-                        message = handler.handle()
+                        handler = Handler(in_message, match)
+                        reply = handler.handle()
                         break
                 else:
-                    message = _('exception.cmd.not_recognised')
+                    reply = _('exception.cmd.not_recognised')
         except SyntaxException as e:
-            message = e.message
+            reply = e.message
 
-        Util.send_message(key.peer_id, message)
+        Util.send_message(key.peer_id, reply)
         return 'ok'
     elif event_type == CONFIRMATION:
         return Config.VK_CONFIRMATION_STRING
