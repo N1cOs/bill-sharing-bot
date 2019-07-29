@@ -40,7 +40,9 @@ def register_debt(wrapper):
     uuid = Util.get_uuid()
     wrapper.amount = float(round(wrapper.amount / len(wrapper.debtors), 2))
     wrapper.date = str(wrapper.date)
-    redis.set('{}:{}'.format(uuid, 'data'), json.dumps(vars(wrapper)), ex=timedelta(days=1))
+
+    temp = Temp(State.DEBT_ACCEPT.value, vars(wrapper))
+    redis.set('{}:data'.format(uuid), json.dumps(vars(temp)), ex=timedelta(days=1))
 
     hl = '{}'.format(50 * '-')
     text = _('owe.debt.confirm').format(uuid, wrapper.name, wrapper.id_lender, wrapper.id_lender, hl)
@@ -91,13 +93,13 @@ def confirm(uuids, id_user):
         users, uuid = users_list[i], uuids[i]
         if len(users) == 1:
             key = '{}:{}'.format(uuid, 'data')
-            wrapper = redis.get(key)
-            if wrapper is None:
-                raise SyntaxException(_('exception.confirm.outdated'))
+            temp = Temp(**json.loads(redis.get(key)))
+            temp.state = State(temp.state)
 
-            wrapper = md.DebtWrapper(**json.loads(wrapper))
-            message = save_debt(wrapper)
-            Util.send_message(wrapper.id_conversation, message)
+            if temp.state == State.DEBT_ACCEPT:
+                _confirm_debt(temp.data)
+            elif temp.state == State.PAY_ACCEPT:
+                _confirm_pay(temp.data['id_debt'], temp.data['id_payer'])
 
             del_keys.extend([key, uuid])
         else:
@@ -110,6 +112,29 @@ def confirm(uuids, id_user):
         redis.mset(set_users)
 
     return _('confirm.confirmed')
+
+
+def _confirm_debt(wrapper):
+    if wrapper is None:
+        raise SyntaxException(_('exception.confirm.outdated'))
+
+    wrapper = md.DebtWrapper(**wrapper)
+    message = save_debt(wrapper)
+
+    Util.send_message(wrapper.id_conversation, message)
+
+
+def _confirm_pay(id_debt, id_payer):
+    debt = md.Debt.query.options(joinedload(md.Debt.debtors)) \
+        .filter(md.Debt.id == id_debt).one()
+    user = md.User.query.filter(md.User.id == id_payer).one()
+
+    payment = md.Payment(id_debt=id_debt, amount=debt.amount, id_user=id_payer,
+                         user=user, debt=debt)
+    debt.debtors.remove(user)
+
+    db.session.add(payment)
+    db.session.commit()
 
 
 def save_debt(wrapper):
@@ -179,5 +204,29 @@ def handle_pay(id_lender, key):
         temp = Temp(State.PAY.value, debts)
         redis.set(repr(key), json.dumps(vars(temp)), ex=timedelta(days=1))
 
-        text = '\n{}\n'.format(50 * '-').join(lines)
-        return _('debts.info').format(text)
+        hl = '\n{}\n'.format(50 * '-')
+        text = hl.join(lines)
+        return _('debts.info').format(hl, text)
+
+
+def register_pay(id_user, id_debts):
+    debts = md.Debt.query.filter(md.Debt.id.in_(id_debts)).all()
+    user = md.User.query.filter(md.User.id == id_user).one()
+    hl = '{}'.format(50 * '-')
+
+    total_sum = 0
+    for debt in debts:
+        uuid = Util.get_uuid()
+        total_sum += debt.amount
+
+        id_lender = debt.id_lender
+        text = _('cmd.pay_accept').format(uuid, debt.name, debt.amount, hl,
+                                          user.id, user.first_name)
+        key = '{}:data'.format(uuid)
+        data = {'id_debt': debt.id, 'id_payer': id_user}
+        temp = Temp(State.PAY_ACCEPT.value, data)
+
+        redis.set(key, json.dumps(vars(temp)), ex=timedelta(days=1))
+        _send_confirmations(uuid, text, [id_lender])
+
+    return _('cmd.pay_register').format(total_sum)

@@ -40,7 +40,24 @@ def temp_owe(key, data, options):
     return cmd.register_debt(wrapper)
 
 
-HANDLERS = {State.OWE_PERIOD: temp_owe}
+def temp_pay(key, data, options):
+    options = list(map(int, options))
+
+    if 0 in options:
+        debts = data
+    else:
+        try:
+            debts = []
+            for op in options:
+                debts.append(data[op - 1])
+        except IndexError:
+            raise SyntaxException('{} is invalid option'.format(op))
+
+    redis.delete(repr(key))
+    return cmd.register_pay(key.from_id, debts)
+
+
+HANDLERS = {State.OWE_PERIOD: temp_owe, State.PAY: temp_pay}
 
 OPTIONS_REGEX = re.compile(r'^((\d+?(\s?[,\s]\s?))*?)(\d+)$')
 

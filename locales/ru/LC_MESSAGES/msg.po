@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-28 17:34+0500\n"
+"POT-Creation-Date: 2019-07-29 20:07+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,17 +97,18 @@ msgstr "Декабрь"
 #: vk_bot/service/commands.py:107 vk_bot/service/commands.py:111
 #: vk_bot/service/commands.py:112 vk_bot/service/commands.py:155
 #: vk_bot/service/commands.py:167 vk_bot/service/commands.py:174
-#: vk_bot/service/commands.py:173
+#: vk_bot/service/commands.py:173 vk_bot/service/commands.py:184
+#: vk_bot/service/commands.py:200
 msgid "debts.info"
 msgstr ""
 "Введите номера долгов, которые хотите погасить. Номера долгов можете вводить "
 "через пробел или через запятую. Если введете 0, то это будет означать выбор "
-"всех долгов.\n"
-"{}"
+"всех долгов. {}{}"
 
 #: vk_bot/service/commands.py:97 vk_bot/service/commands.py:98
 #: vk_bot/service/commands.py:141 vk_bot/service/commands.py:153
 #: vk_bot/service/commands.py:160 vk_bot/service/commands.py:159
+#: vk_bot/service/commands.py:169 vk_bot/service/commands.py:185
 msgid "exception.no_debts"
 msgstr "Долгов не найдено"
 
@@ -126,7 +127,7 @@ msgstr ""
 "отправте цифру 0, для следующего - цифру 1"
 
 #: vk_bot/service/commands.py:33 vk_bot/service/commands.py:34
-#: vk_bot/service/commands.py:49
+#: vk_bot/service/commands.py:49 vk_bot/service/commands.py:51
 msgid "owe.debt.register"
 msgstr ""
 "Информация о долге была зарегестрирована. После того, как все должники "
@@ -134,7 +135,8 @@ msgstr ""
 
 #: vk_bot/service/commands.py:48 vk_bot/service/commands.py:88
 #: vk_bot/service/commands.py:110 vk_bot/service/commands.py:117
-#: vk_bot/service/commands.py:116
+#: vk_bot/service/commands.py:116 vk_bot/service/commands.py:126
+#: vk_bot/service/commands.py:142
 msgid "owe.debt.saved"
 msgstr "Информация о долге успешно сохранена"
 
@@ -143,6 +145,7 @@ msgid "exception.cmd.not_recognised"
 msgstr "Команда не распознана, проверьте формат"
 
 #: vk_bot/service/commands.py:49 vk_bot/service/commands.py:46
+#: vk_bot/service/commands.py:48
 msgid "owe.debt.confirm"
 msgstr ""
 "#{}\n"
@@ -155,9 +158,10 @@ msgstr ""
 "удалена"
 
 #: vk_bot/service/commands.py:96 vk_bot/service/commands.py:103
-#: vk_bot/service/commands.py:102
+#: vk_bot/service/commands.py:102 vk_bot/service/commands.py:112
+#: vk_bot/service/commands.py:114
 msgid "confirm.confirmed"
-msgstr "Выбранные долги подтверждены"
+msgstr "Выбранные долги и платежи подтверждены"
 
 #: vk_bot/service/handlers.py:87
 msgid "exception.confirm.bad_id"
@@ -170,11 +174,13 @@ msgid "exception.confirm.not_confirmed"
 msgstr "Долг не подтвержден, отправьте в ответе цифру 1 для подтверждения"
 
 #: vk_bot/service/commands.py:82 vk_bot/service/commands.py:91
-#: vk_bot/service/commands.py:81
+#: vk_bot/service/commands.py:81 vk_bot/service/commands.py:96
+#: vk_bot/service/commands.py:84 vk_bot/service/commands.py:119
 msgid "exception.confirm.outdated"
 msgstr "Информация о долге не найдена"
 
-#: vk_bot/service/commands.py:85
+#: vk_bot/service/commands.py:85 vk_bot/service/commands.py:87
+#: vk_bot/service/commands.py:89
 msgid "exception.confirm.user_not_found"
 msgstr "Данный пользователь не должен подтверждать данный долг"
 
@@ -189,3 +195,20 @@ msgstr "Выбрана несуществующая опция"
 #: vk_bot/service/temp.py:55
 msgid "exception.invalid_format"
 msgstr "Формат опции некорректен"
+
+#: vk_bot/service/commands.py:192 vk_bot/service/commands.py:214
+msgid "cmd.pay_accept"
+msgstr ""
+"#{}\n"
+"Название: {}\n"
+"Сумма: {}\n"
+"{}\n"
+"Подтвердите, что данный долг погашен пользователем [id{}|{}], отправив 1 в "
+"ОТВЕТЕ. Также можете выбрать несколько подтверждений и переслать их боту в "
+"личном сообщении, отправив 1 в сообщении. На подтверждение даётся 24 часа, "
+"иначе информация будет удалена"
+
+#: vk_bot/service/commands.py:222
+msgid "cmd.pay_register"
+msgstr "Сумма к оплате - {}. После того, как оплата будет подтверждена, "
+"информация полностью будет сохранена в системе"
