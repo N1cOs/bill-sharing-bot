@@ -33,7 +33,7 @@ class OweHandler(Handler):
     @staticmethod
     def match(text):
         pattern = OweHandler.PATTERN.format(_('cmd.owe'), _('monthly'))
-        return re.match(pattern, text)
+        return re.match(pattern, text, re.IGNORECASE)
 
     def handle_cmd(self, match, key):
         debtors = Util.parse_options(match.group('debtors'))
@@ -61,7 +61,7 @@ class PayHandler(Handler):
     @staticmethod
     def match(text):
         pattern = PayHandler.PATTERN.format(_('cmd.pay'))
-        return re.match(pattern, text)
+        return re.match(pattern, text, re.IGNORECASE)
 
     def handle_cmd(self, match, key):
         lender = match.group('user')
