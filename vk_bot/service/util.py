@@ -5,13 +5,17 @@ from enum import Enum, auto
 from vk_api.utils import get_random_id
 
 from vk_bot.app import vk
+from vk_bot.exceptions import SyntaxException
 
 
 class Util:
     @staticmethod
     def parse_user_id(text):
-        pipe_index = text.index('|')
-        return int(text[3:pipe_index])
+        try:
+            pipe_index = text.index('|')
+            return int(text[3:pipe_index])
+        except ValueError:
+            raise SyntaxException(_('exception.invalid_user'))
 
     @staticmethod
     def parse_options(text):
