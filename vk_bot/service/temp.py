@@ -57,16 +57,26 @@ def temp_pay(key, data, options):
     return cmd.register_pay(key.from_id, debts)
 
 
+def cancel_cmd(key):
+    redis.delete(repr(key))
+    return _('cmd.cancel')
+
+
 HANDLERS = {State.OWE_PERIOD: temp_owe, State.PAY: temp_pay}
 
 OPTIONS_REGEX = re.compile(r'^((\d+?(\s?[,\s]\s?))*?)(\d+)$')
+CANCEL_SYMBOL = '-1'
 
 
 def handle(key, temp, text):
+    if text == CANCEL_SYMBOL:
+        return cancel_cmd(key)
+
     match = OPTIONS_REGEX.match(text)
     if match:
         options = Util.parse_options(text)
         handler = HANDLERS.get(State(temp.state))
+
         if handler:
             return handler(key, temp.data, options)
     raise SyntaxException(_('exception.invalid_format'))
