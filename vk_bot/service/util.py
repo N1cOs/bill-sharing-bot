@@ -51,6 +51,9 @@ class State(Enum):
     DELETE = auto()
     UPDATE = auto()
 
+    DEBT_ACCEPT = auto()
+    PAY_ACCEPT = auto()
+
 
 class Temp:
     def __init__(self, state, data):
