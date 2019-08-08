@@ -11,7 +11,7 @@ from .config import Config
 
 MESSAGE_NEW, CONFIRMATION = 'message_new', 'confirmation'
 
-HANDLERS = [hd.OweHandler, hd.PayHandler]
+HANDLERS = [hd.OweHandler, hd.PayHandler, hd.HelpHandler]
 
 
 @app.route('/', methods=['POST'])

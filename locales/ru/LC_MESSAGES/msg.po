@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-29 22:46+0500\n"
+"POT-Creation-Date: 2019-08-08 21:19+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,14 +18,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: vk_bot/service/handlers.py:14 vk_bot/service/handlers.py:32
+#: vk_bot/service/handlers.py:35
 msgid "cmd.owe"
 msgstr "должен"
 
 #: vk_bot/service/handlers.py:14 vk_bot/service/handlers.py:32
+#: vk_bot/service/handlers.py:35
 msgid "monthly"
 msgstr "ежемесячно"
 
 #: vk_bot/service/handlers.py:49 vk_bot/service/handlers.py:60
+#: vk_bot/service/handlers.py:63
 msgid "cmd.pay"
 msgstr "заплатить"
 
@@ -143,7 +146,9 @@ msgstr "Информация о долге успешно сохранена"
 
 #: vk_bot/routes.py:42 vk_bot/routes.py:55
 msgid "exception.cmd.not_recognised"
-msgstr "Команда не распознана, проверьте формат"
+msgstr ""
+"Команда не распознана, проверьте формат. Для просмотра доступныхкоманд "
+"напишите \"помощь\""
 
 #: vk_bot/service/commands.py:49 vk_bot/service/commands.py:46
 #: vk_bot/service/commands.py:48
@@ -164,13 +169,13 @@ msgstr ""
 msgid "confirm.confirmed"
 msgstr "Выбранные долги и платежи подтверждены"
 
-#: vk_bot/service/handlers.py:87
+#: vk_bot/service/handlers.py:87 vk_bot/service/handlers.py:89
 msgid "exception.confirm.bad_id"
 msgstr ""
 "Произошла ошибка при подтверждении, проверьте отправителя пересылаемого "
 "сообщения"
 
-#: vk_bot/service/handlers.py:90
+#: vk_bot/service/handlers.py:90 vk_bot/service/handlers.py:92
 msgid "exception.confirm.not_confirmed"
 msgstr "Долг не подтвержден, отправьте в ответе цифру 1 для подтверждения"
 
@@ -222,3 +227,17 @@ msgstr "Предыдущая команда отменена"
 #: vk_bot/service/util.py:17
 msgid "exception.invalid_user"
 msgstr "Одного из перечисленных пользователей не существует"
+
+#: vk_bot/service/handlers.py:104
+msgid "cmd.help"
+msgstr "помощь"
+
+#: vk_bot/service/handlers.py:108
+msgid "cmd.help_message"
+msgstr ""
+"Список команд:\n"
+"1. Должен\n"
+"Формат: @пользователь1[,@пользователь2, …] должен [@пользователь3] сумма "
+"[ежемесячно] название\n"
+"2. Заплатить\n"
+"Формат: [@пользователь1] заплатить"

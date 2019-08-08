@@ -94,3 +94,15 @@ class ConfirmHandler(Handler):
         uuids = list({m.group('uuid') for m in self.matches})
 
         return cmd.confirm(uuids, key.from_id)
+
+
+class HelpHandler(Handler):
+    PATTERN = r'^{}$'
+
+    @staticmethod
+    def match(text):
+        pattern = HelpHandler.PATTERN.format(_('cmd.help'))
+        return re.match(pattern, text, re.IGNORECASE)
+
+    def handle_cmd(self, match, key):
+        return _('cmd.help_message')
