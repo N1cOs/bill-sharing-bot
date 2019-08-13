@@ -37,6 +37,15 @@ class Util:
     def get_uuid():
         return uuid.uuid1().hex
 
+    @staticmethod
+    def parse_pay_options(text):
+        values = re.split(r'(?<=\d)\s+(?=\d)', text)
+        result = {}
+        for val in values:
+            temp = re.split(r'\s*:\s*', val)
+            result[int(temp[0])] = float(temp[1])
+        return result
+
 
 class Key:
     def __init__(self, peer_id, from_id):
