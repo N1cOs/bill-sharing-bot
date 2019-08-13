@@ -25,10 +25,10 @@ class Debt(db.Model):
     def info(self, lender_name):
         if self.is_monthly:
             month = _(calendar.month_name[self.date.month])
-            return _('debt.info.monthly').format(self.name, self.date, month, self.amount,
+            return _('debt.info.monthly').format(self.name, self.date, month, self.left_amount,
                                                  self.id_lender, lender_name)
 
-        return _('debt.info.once').format(self.name, self.date, self.amount,
+        return _('debt.info.once').format(self.name, self.date, self.left_amount,
                                           self.id_lender, lender_name)
 
 
