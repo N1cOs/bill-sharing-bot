@@ -41,17 +41,13 @@ def temp_owe(key, data, options):
 
 
 def temp_pay(key, data, options):
-    options = list(map(int, options))
-
-    if 0 in options:
-        debts = data
-    else:
-        try:
-            debts = []
-            for op in options:
-                debts.append(data[op - 1])
-        except IndexError:
-            raise SyntaxException('{} is invalid option'.format(op))
+    try:
+        debts = {}
+        print(options)
+        for op, amount in options.items():
+            debts[data[op - 1]] = amount
+    except IndexError:
+        raise SyntaxException('{} is invalid option'.format(op))
 
     redis.delete(repr(key))
     return cmd.register_pay(key.from_id, debts)
@@ -65,18 +61,21 @@ def cancel_cmd(key):
 HANDLERS = {State.OWE_PERIOD: temp_owe, State.PAY: temp_pay}
 
 OPTIONS_REGEX = re.compile(r'^((\d+?(\s?[,\s]\s?))*?)(\d+)$')
+PAY_REGEX = re.compile(r'^(\d+?\s?:\s?\d+?\s*?)+$')
 CANCEL_SYMBOL = '-1'
 
 
 def handle(key, temp, text):
     if text == CANCEL_SYMBOL:
         return cancel_cmd(key)
+    handler = HANDLERS.get(State(temp.state))
 
     match = OPTIONS_REGEX.match(text)
     if match:
-        options = Util.parse_options(text)
-        handler = HANDLERS.get(State(temp.state))
+        return handler(key, temp.data, Util.parse_options(text))
 
-        if handler:
-            return handler(key, temp.data, options)
+    match = PAY_REGEX.match(text)
+    if match:
+        return handler(key, temp.data, Util.parse_pay_options(text))
+
     raise SyntaxException(_('exception.invalid_format'))

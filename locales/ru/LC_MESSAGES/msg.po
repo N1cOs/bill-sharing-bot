@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-08 21:19+0500\n"
+"POT-Creation-Date: 2019-08-13 19:06+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,29 +101,33 @@ msgstr "Декабрь"
 #: vk_bot/service/commands.py:112 vk_bot/service/commands.py:155
 #: vk_bot/service/commands.py:167 vk_bot/service/commands.py:174
 #: vk_bot/service/commands.py:173 vk_bot/service/commands.py:184
-#: vk_bot/service/commands.py:200
+#: vk_bot/service/commands.py:200 vk_bot/service/commands.py:215
 msgid "debts.info"
 msgstr ""
-"Введите номера долгов, которые хотите погасить. Номера долгов можете вводить "
-"через пробел или через запятую. Отправка 0 будет означать выбор всех долгов. "
+"Введите номер долга, затем через двоеточие сумму, которую хотите заплатить в "
+"пользу данного долга. Перечисляйте долги через пробел. Пример: 1:250 2:200. "
 "Для отмены текущей команды отправьте -1 {}{}"
 
 #: vk_bot/service/commands.py:97 vk_bot/service/commands.py:98
 #: vk_bot/service/commands.py:141 vk_bot/service/commands.py:153
 #: vk_bot/service/commands.py:160 vk_bot/service/commands.py:159
 #: vk_bot/service/commands.py:169 vk_bot/service/commands.py:185
+#: vk_bot/service/commands.py:200
 msgid "exception.no_debts"
 msgstr "Долгов не найдено"
 
 #: vk_bot/service/commands.py:16 vk_bot/service/commands.py:17
+#: vk_bot/service/commands.py:19
 msgid "exception.amount"
 msgstr "Сумма долга должна быть больше или равна 1"
 
 #: vk_bot/service/commands.py:19 vk_bot/service/commands.py:20
+#: vk_bot/service/commands.py:22
 msgid "exception.owe_himself"
 msgstr "Пользователь не может задолжать самому себе"
 
 #: vk_bot/service/commands.py:28 vk_bot/service/commands.py:29
+#: vk_bot/service/commands.py:31
 msgid "owe.period"
 msgstr ""
 "В текущий или следующий месяц внести первый платеж? Для текущего периода "
@@ -132,6 +136,7 @@ msgstr ""
 
 #: vk_bot/service/commands.py:33 vk_bot/service/commands.py:34
 #: vk_bot/service/commands.py:49 vk_bot/service/commands.py:51
+#: vk_bot/service/commands.py:54
 msgid "owe.debt.register"
 msgstr ""
 "Информация о долге была зарегестрирована. После того, как все должники "
@@ -140,7 +145,7 @@ msgstr ""
 #: vk_bot/service/commands.py:48 vk_bot/service/commands.py:88
 #: vk_bot/service/commands.py:110 vk_bot/service/commands.py:117
 #: vk_bot/service/commands.py:116 vk_bot/service/commands.py:126
-#: vk_bot/service/commands.py:142
+#: vk_bot/service/commands.py:142 vk_bot/service/commands.py:153
 msgid "owe.debt.saved"
 msgstr "Информация о долге успешно сохранена"
 
@@ -151,7 +156,7 @@ msgstr ""
 "напишите \"помощь\""
 
 #: vk_bot/service/commands.py:49 vk_bot/service/commands.py:46
-#: vk_bot/service/commands.py:48
+#: vk_bot/service/commands.py:48 vk_bot/service/commands.py:51
 msgid "owe.debt.confirm"
 msgstr ""
 "#{}\n"
@@ -165,7 +170,7 @@ msgstr ""
 
 #: vk_bot/service/commands.py:96 vk_bot/service/commands.py:103
 #: vk_bot/service/commands.py:102 vk_bot/service/commands.py:112
-#: vk_bot/service/commands.py:114
+#: vk_bot/service/commands.py:114 vk_bot/service/commands.py:117
 msgid "confirm.confirmed"
 msgstr "Выбранные долги и платежи подтверждены"
 
@@ -182,11 +187,12 @@ msgstr "Долг не подтвержден, отправьте в ответе
 #: vk_bot/service/commands.py:82 vk_bot/service/commands.py:91
 #: vk_bot/service/commands.py:81 vk_bot/service/commands.py:96
 #: vk_bot/service/commands.py:84 vk_bot/service/commands.py:119
+#: vk_bot/service/commands.py:87 vk_bot/service/commands.py:122
 msgid "exception.confirm.outdated"
 msgstr "Информация о долге не найдена"
 
 #: vk_bot/service/commands.py:85 vk_bot/service/commands.py:87
-#: vk_bot/service/commands.py:89
+#: vk_bot/service/commands.py:89 vk_bot/service/commands.py:92
 msgid "exception.confirm.user_not_found"
 msgstr "Данный пользователь не должен подтверждать данный долг"
 
@@ -203,18 +209,19 @@ msgid "exception.invalid_format"
 msgstr "Формат опции некорректен"
 
 #: vk_bot/service/commands.py:192 vk_bot/service/commands.py:214
+#: vk_bot/service/commands.py:229
 msgid "cmd.pay_accept"
 msgstr ""
 "#{}\n"
 "Название: {}\n"
 "Сумма: {}\n"
 "{}\n"
-"Подтвердите, что данный долг погашен пользователем [id{}|{}], отправив 1 в "
-"ОТВЕТЕ. Также можете выбрать несколько подтверждений и переслать их боту в "
-"личном сообщении, отправив 1 в сообщении. На подтверждение даётся 24 часа, "
-"иначе информация будет удалена"
+"Подтвердите, что пользователь [id{}|{}] заплатил в пользу данного долга "
+"указанную сумму, отправив 1 в ОТВЕТЕ. Также можете выбрать несколько "
+"подтверждений и переслать их боту в личном сообщении, отправив 1 в "
+"сообщении. На подтверждение даётся 24 часа, иначе информация будет удалена"
 
-#: vk_bot/service/commands.py:222
+#: vk_bot/service/commands.py:222 vk_bot/service/commands.py:238
 msgid "cmd.pay_register"
 msgstr ""
 "Сумма к оплате - {}. После того, как оплата будет подтверждена, информация "
@@ -241,3 +248,7 @@ msgstr ""
 "[ежемесячно] название\n"
 "2. Заплатить\n"
 "Формат: [@пользователь1] заплатить"
+
+#: vk_bot/service/commands.py:16
+msgid "exception.owe_creation"
+msgstr "Нельзя создавать долги в личных сообщениях"

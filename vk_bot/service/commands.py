@@ -1,9 +1,6 @@
 import json
 from datetime import datetime, timedelta
 
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.exc import NoResultFound
-
 import vk_bot.model as md
 from vk_bot.app import redis, db
 from vk_bot.config import Config
@@ -12,6 +9,9 @@ from .util import State, Temp, Util
 
 
 def handle_owe(key, id_lender, debtors, amount, is_monthly, name):
+    if key.peer_id < 2000000000:
+        raise SyntaxException(_('exception.owe_creation'))
+
     if amount < 1:
         raise SyntaxException(_('exception.amount'))
 
@@ -99,7 +99,7 @@ def confirm(uuids, id_user):
             if temp.state == State.DEBT_ACCEPT:
                 _confirm_debt(temp.data)
             elif temp.state == State.PAY_ACCEPT:
-                _confirm_pay(temp.data['id_debt'], temp.data['id_payer'])
+                _confirm_pay(temp.data['id_debt'], temp.data['id_payer'], temp.data['amount'])
 
             del_keys.extend([key, uuid])
         else:
@@ -124,14 +124,13 @@ def _confirm_debt(wrapper):
     Util.send_message(wrapper.id_conversation, message)
 
 
-def _confirm_pay(id_debt, id_payer):
-    debt = md.Debt.query.options(joinedload(md.Debt.debtors)) \
-        .filter(md.Debt.id == id_debt).one()
+def _confirm_pay(id_debt, id_payer, amount):
+    debt = md.Debt.query.filter(md.Debt.id == id_debt).one()
     user = md.User.query.filter(md.User.id == id_payer).one()
 
-    payment = md.Payment(id_debt=id_debt, amount=debt.amount, id_user=id_payer,
+    payment = md.Payment(id_debt=id_debt, amount=amount, id_user=id_payer,
                          user=user, debt=debt)
-    debt.debtors.remove(user)
+    debt.left_amount -= amount
 
     db.session.add(payment)
     db.session.commit()
@@ -140,7 +139,7 @@ def _confirm_pay(id_debt, id_payer):
 def save_debt(wrapper):
     lender, debtors = get_users(wrapper.id_lender, wrapper.debtors)
     debt = md.Debt(name=wrapper.name, date=wrapper.date, amount=wrapper.amount,
-                   id_conversation=wrapper.id_conversation, is_current=wrapper.is_current,
+                   id_conversation=wrapper.id_conversation, left_amount=wrapper.amount,
                    is_monthly=wrapper.is_monthly)
 
     debt.lender = lender
@@ -167,63 +166,66 @@ def get_users(id_lender, id_debtors):
 
 
 def handle_pay(id_lender, key):
-    try:
-        if id_lender:
-            if key.peer_id == key.from_id:
-                user = md.User.query.options(joinedload(md.User.debts)) \
-                    .filter(md.User.id == key.from_id) \
-                    .filter(md.Debt.id_lender == id_lender) \
-                    .one()
-            else:
-                user = md.User.query.options(joinedload(md.User.debts)) \
-                    .filter(md.User.id == key.from_id) \
-                    .filter(md.Debt.id_lender == id_lender) \
-                    .filter(md.Debt.id_conversation == key.peer_id) \
-                    .one()
+    if id_lender:
+        if key.peer_id == key.from_id:
+            user_debts = md.Debt.query.join(md.user_debt) \
+                .filter(md.user_debt.columns.user_id == key.from_id) \
+                .filter(md.Debt.id_lender == id_lender) \
+                .filter(md.Debt.left_amount > 0) \
+                .all()
         else:
-            if key.peer_id == key.from_id:
-                user = md.User.query.options(joinedload(md.User.debts)) \
-                    .filter(md.User.id == key.from_id) \
-                    .one()
-            else:
-                user = md.User.query.options(joinedload(md.User.debts)) \
-                    .filter(md.User.id == key.from_id) \
-                    .filter(md.Debt.id_conversation == key.peer_id) \
-                    .one()
-    except NoResultFound:
-        raise SyntaxException(_('exception.no_debts'))
+            user_debts = md.Debt.query.join(md.user_debt) \
+                .filter(md.user_debt.columns.user_id == key.from_id) \
+                .filter(md.Debt.id_lender == id_lender) \
+                .filter(md.Debt.id_conversation == key.peer_id) \
+                .filter(md.Debt.left_amount > 0) \
+                .all()
     else:
-        users = md.User.query.filter(md.User.id.in_({d.id_lender for d in user.debts})).all()
-        users = {u.id: '{} {}'.format(u.first_name, u.second_name) for u in users}
+        if key.peer_id == key.from_id:
+            user_debts = md.Debt.query.join(md.user_debt) \
+                .filter(md.user_debt.columns.user_id == key.from_id) \
+                .filter(md.Debt.left_amount > 0) \
+                .all()
+        else:
+            user_debts = md.Debt.query.join(md.user_debt) \
+                .filter(md.user_debt.columns.user_id == key.from_id) \
+                .filter(md.Debt.id_conversation == key.peer_id) \
+                .filter(md.Debt.left_amount > 0) \
+                .all()
+    if len(user_debts) == 0:
+        raise SyntaxException(_('exception.no_debts'))
 
-        debts, lines = [], []
-        for index, debt in enumerate(user.debts, 1):
-            lines.append('{}.{}'.format(index, debt.info(users[debt.id_lender])))
-            debts.append(debt.id)
+    users = md.User.query.filter(md.User.id.in_({d.id_lender for d in user_debts})).all()
+    users = {u.id: '{} {}'.format(u.first_name, u.second_name) for u in users}
 
-        temp = Temp(State.PAY.value, debts)
-        redis.set(repr(key), json.dumps(vars(temp)), ex=timedelta(days=1))
+    debts, lines = [], []
+    for index, debt in enumerate(user_debts, 1):
+        lines.append('{}.{}'.format(index, debt.info(users[debt.id_lender])))
+        debts.append(debt.id)
 
-        hl = '\n{}\n'.format(50 * '-')
-        text = hl.join(lines)
-        return _('debts.info').format(hl, text)
+    temp = Temp(State.PAY.value, debts)
+    redis.set(repr(key), json.dumps(vars(temp)), ex=timedelta(days=1))
+
+    hl = '\n{}\n'.format(50 * '-')
+    text = hl.join(lines)
+    return _('debts.info').format(hl, text)
 
 
-def register_pay(id_user, id_debts):
-    debts = md.Debt.query.filter(md.Debt.id.in_(id_debts)).all()
+def register_pay(id_user, debts_amount):
+    debts = md.Debt.query.filter(md.Debt.id.in_(debts_amount.keys())).all()
     user = md.User.query.filter(md.User.id == id_user).one()
     hl = '{}'.format(50 * '-')
 
     total_sum = 0
     for debt in debts:
         uuid = Util.get_uuid()
-        total_sum += debt.amount
+        total_sum += debts_amount[debt.id]
 
         id_lender = debt.id_lender
-        text = _('cmd.pay_accept').format(uuid, debt.name, debt.amount, hl,
+        text = _('cmd.pay_accept').format(uuid, debt.name, debts_amount[debt.id], hl,
                                           user.id, user.first_name)
         key = '{}:data'.format(uuid)
-        data = {'id_debt': debt.id, 'id_payer': id_user}
+        data = {'id_debt': debt.id, 'id_payer': id_user, 'amount': debts_amount[debt.id]}
         temp = Temp(State.PAY_ACCEPT.value, data)
 
         redis.set(key, json.dumps(vars(temp)), ex=timedelta(days=1))
