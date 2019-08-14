@@ -13,7 +13,9 @@ class Debt(db.Model):
     id_lender = db.Column(db.Integer, db.ForeignKey('app_user.id'))
     id_conversation = db.Column(db.Integer)
     left_amount = db.Column(db.Float(24))
+
     is_monthly = db.Column(db.Boolean, default=False)
+    is_current = db.Column(db.Boolean, default=False)
 
     debtors = db.relationship('User', secondary=user_debt)
     lender = db.relationship('User')
