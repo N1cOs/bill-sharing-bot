@@ -138,9 +138,11 @@ def _confirm_pay(id_debt, id_payer, amount):
 
 def save_debt(wrapper):
     lender, debtors = get_users(wrapper.id_lender, wrapper.debtors)
+
     debt = md.Debt(name=wrapper.name, date=wrapper.date, amount=wrapper.amount,
                    id_conversation=wrapper.id_conversation, left_amount=wrapper.amount,
                    is_monthly=wrapper.is_monthly)
+    debt.is_current = debt.is_monthly
 
     debt.lender = lender
     debt.debtors = debtors

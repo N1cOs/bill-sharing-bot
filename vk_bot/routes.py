@@ -1,4 +1,5 @@
 import re
+import vk_bot.service.scheduler
 
 from flask import request, json, abort
 
