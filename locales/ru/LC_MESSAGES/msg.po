@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-13 19:06+0300\n"
+"POT-Creation-Date: 2019-08-14 21:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -205,6 +205,7 @@ msgid "exception.invalid_option"
 msgstr "Выбрана несуществующая опция"
 
 #: vk_bot/service/temp.py:55 vk_bot/service/temp.py:81
+#: vk_bot/service/temp.py:84
 msgid "exception.invalid_format"
 msgstr "Формат опции некорректен"
 
@@ -227,7 +228,7 @@ msgstr ""
 "Сумма к оплате - {}. После того, как оплата будет подтверждена, информация "
 "полностью будет сохранена в системе"
 
-#: vk_bot/service/temp.py:68
+#: vk_bot/service/temp.py:68 vk_bot/service/temp.py:58
 msgid "cmd.cancel"
 msgstr "Предыдущая команда отменена"
 
@@ -252,3 +253,7 @@ msgstr ""
 #: vk_bot/service/commands.py:16
 msgid "exception.owe_creation"
 msgstr "Нельзя создавать долги в личных сообщениях"
+
+#: vk_bot/service/temp.py:82
+msgid "exception.unknown"
+msgstr "Произошла неизвестная ошибка :("

@@ -1,4 +1,5 @@
 import re
+import logging
 
 import vk_bot.service.commands as cmd
 from vk_bot.config import Config
@@ -22,8 +23,8 @@ class Handler:
         except SyntaxException:
             raise
         except Exception as e:
-            print(e.args)
-            raise SyntaxException('Error occurred while parsing. Check format')
+            logging.error(e, exc_info=True)
+            raise SyntaxException(_('exception.unknown'))
 
 
 class OweHandler(Handler):

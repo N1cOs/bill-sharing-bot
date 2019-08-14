@@ -1,4 +1,5 @@
 import re
+import logging
 import vk_bot.service.scheduler
 
 from flask import request, json, abort
@@ -56,6 +57,9 @@ def handle():
                     reply = _('exception.cmd.not_recognised')
         except SyntaxException as e:
             reply = e.message
+        except Exception as e:
+            logging.error(e, exc_info=True)
+            reply = _('exception.unknown')
 
         Util.send_message(key.peer_id, reply)
         return 'ok'

@@ -1,4 +1,5 @@
 import json
+import logging
 import re
 from datetime import datetime
 
@@ -66,16 +67,20 @@ CANCEL_SYMBOL = '-1'
 
 
 def handle(key, temp, text):
-    if text == CANCEL_SYMBOL:
-        return cancel_cmd(key)
-    handler = HANDLERS.get(State(temp.state))
+    try:
+        if text == CANCEL_SYMBOL:
+            return cancel_cmd(key)
+        handler = HANDLERS.get(State(temp.state))
 
-    match = OPTIONS_REGEX.match(text)
-    if match:
-        return handler(key, temp.data, Util.parse_options(text))
+        match = OPTIONS_REGEX.match(text)
+        if match:
+            return handler(key, temp.data, Util.parse_options(text))
 
-    match = PAY_REGEX.match(text)
-    if match:
-        return handler(key, temp.data, Util.parse_pay_options(text))
-
-    raise SyntaxException(_('exception.invalid_format'))
+        match = PAY_REGEX.match(text)
+        if match:
+            return handler(key, temp.data, Util.parse_pay_options(text))
+    except Exception as e:
+        logging.error(e, exc_info=True)
+        raise SyntaxException(_('exception.unknown'))
+    else:
+        raise SyntaxException(_('exception.invalid_format'))
