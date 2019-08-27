@@ -152,7 +152,7 @@ msgstr "Информация о долге успешно сохранена"
 #: vk_bot/routes.py:42 vk_bot/routes.py:55
 msgid "exception.cmd.not_recognised"
 msgstr ""
-"Команда не распознана, проверьте формат. Для просмотра доступныхкоманд "
+"Команда не распознана, проверьте формат. Для просмотра доступных команд "
 "напишите \"помощь\""
 
 #: vk_bot/service/commands.py:49 vk_bot/service/commands.py:46
