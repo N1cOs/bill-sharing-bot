@@ -19,7 +19,9 @@ HANDLERS = [hd.OweHandler, hd.PayHandler, hd.HelpHandler]
 @app.route('/', methods=['POST'])
 def handle():
     req = json.loads(request.data)
-    if req['secret'] != Config.VK_SECRET_TOKEN:
+
+    secret_token = req.get('secret')
+    if secret_token is None or secret_token != Config.VK_SECRET_TOKEN:
         abort(400)
 
     event_type = req['type']
