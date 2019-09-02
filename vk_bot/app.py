@@ -1,5 +1,7 @@
 import gettext
 import logging
+from sys import stderr
+
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -11,7 +13,7 @@ from vk_bot.config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 
-logging.basicConfig(filename=Config.LOG_FILE, level=logging.ERROR)
+logging.basicConfig(stream=stderr, level=logging.ERROR, format=Config.LOG_FORMAT)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)

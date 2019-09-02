@@ -5,8 +5,8 @@ from pathlib import Path
 class Config:
     DEBUG = False
     LOCALE_DIR = Path(__file__).parent.parent.joinpath('locales')
-    LOG_FILE = '/tmp/bot.log'
     DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+    LOG_FORMAT = '%(asctime)s:%(levelname)s %(message)s'
 
     REDIS_PASSWORD = getenv('REDIS_PASSWORD')
 
