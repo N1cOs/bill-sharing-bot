@@ -78,6 +78,8 @@ def handle(key, temp, text):
         match = PAY_REGEX.match(text)
         if match:
             return handler(key, temp.data, Util.parse_pay_options(text))
+    except SyntaxException:
+        raise
     except Exception as e:
         logging.error(e, exc_info=True)
         raise SyntaxException(_('exception.unknown'))
