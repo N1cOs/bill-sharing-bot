@@ -6,7 +6,7 @@ class Config:
     DEBUG = True if getenv('APP_MODE') == 'DEV' else False
     LOCALE_DIR = Path(__file__).parent.parent.joinpath('locales')
     DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
-    LOG_FORMAT = '%(asctime)s:%(levelname)s %(message)s'
+    LOG_FORMAT = '[%(asctime)s] [%(levelname)s] %(message)s'
 
     REDIS_PASSWORD = getenv('REDIS_PASSWORD')
 
