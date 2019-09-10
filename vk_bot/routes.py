@@ -1,7 +1,8 @@
 import logging
 import re
+import time
 
-from flask import request, json, abort
+from flask import request, g, json, abort
 
 import vk_bot.service.handlers as hd
 import vk_bot.service.temp as t
@@ -70,3 +71,17 @@ def handle():
     elif event_type == CONFIRMATION:
         return Config.VK_CONFIRMATION_STRING
     abort(400)
+
+
+@app.before_request
+def pre_handler():
+    g.start = time.time()
+
+
+@app.after_request
+def post_handler(response):
+    duration = round((time.time() - g.start) * 1000)
+    msg = f'[{request.method} {request.path}] [{duration}ms] {response.status}'
+    logging.info(msg)
+
+    return response
