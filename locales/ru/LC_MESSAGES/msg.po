@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-14 21:30+0300\n"
+"POT-Creation-Date: 2019-09-10 21:04+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,6 +102,7 @@ msgstr "Декабрь"
 #: vk_bot/service/commands.py:167 vk_bot/service/commands.py:174
 #: vk_bot/service/commands.py:173 vk_bot/service/commands.py:184
 #: vk_bot/service/commands.py:200 vk_bot/service/commands.py:215
+#: vk_bot/service/commands.py:213
 msgid "debts.info"
 msgstr ""
 "Введите номер долга, затем через двоеточие сумму, которую хотите заплатить в "
@@ -112,7 +113,7 @@ msgstr ""
 #: vk_bot/service/commands.py:141 vk_bot/service/commands.py:153
 #: vk_bot/service/commands.py:160 vk_bot/service/commands.py:159
 #: vk_bot/service/commands.py:169 vk_bot/service/commands.py:185
-#: vk_bot/service/commands.py:200
+#: vk_bot/service/commands.py:200 vk_bot/service/commands.py:198
 msgid "exception.no_debts"
 msgstr "Долгов не найдено"
 
@@ -146,6 +147,7 @@ msgstr ""
 #: vk_bot/service/commands.py:110 vk_bot/service/commands.py:117
 #: vk_bot/service/commands.py:116 vk_bot/service/commands.py:126
 #: vk_bot/service/commands.py:142 vk_bot/service/commands.py:153
+#: vk_bot/service/commands.py:152
 msgid "owe.debt.saved"
 msgstr "Информация о долге успешно сохранена"
 
@@ -210,7 +212,7 @@ msgid "exception.invalid_format"
 msgstr "Формат опции некорректен"
 
 #: vk_bot/service/commands.py:192 vk_bot/service/commands.py:214
-#: vk_bot/service/commands.py:229
+#: vk_bot/service/commands.py:229 vk_bot/service/commands.py:230
 msgid "cmd.pay_accept"
 msgstr ""
 "#{}\n"
@@ -223,6 +225,7 @@ msgstr ""
 "сообщении. На подтверждение даётся 24 часа, иначе информация будет удалена"
 
 #: vk_bot/service/commands.py:222 vk_bot/service/commands.py:238
+#: vk_bot/service/commands.py:239
 msgid "cmd.pay_register"
 msgstr ""
 "Сумма к оплате - {}. После того, как оплата будет подтверждена, информация "
@@ -250,10 +253,14 @@ msgstr ""
 "2. Заплатить\n"
 "Формат: [@пользователь1] заплатить"
 
-#: vk_bot/service/commands.py:16
+#: vk_bot/service/commands.py:16 vk_bot/service/commands.py:13
 msgid "exception.owe_creation"
 msgstr "Нельзя создавать долги в личных сообщениях"
 
 #: vk_bot/service/temp.py:82
 msgid "exception.unknown"
 msgstr "Произошла неизвестная ошибка :("
+
+#: vk_bot/service/commands.py:224
+msgid "exception.pay_too_much"
+msgstr "Ошибка, по долгу {} выбрана сумма, которая превышает размер долга"

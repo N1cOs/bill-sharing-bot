@@ -215,10 +215,15 @@ def handle_pay(id_lender, key):
 
 def register_pay(id_user, debts_amount):
     debts = md.Debt.query.filter(md.Debt.id.in_(debts_amount.keys())).all()
+    for debt in debts:
+        if debt.left_amount < debts_amount[debt.id]:
+            msg = (_('exception.pay_too_much')).format(debt.name)
+            raise SyntaxException(msg)
+
     user = md.User.query.filter(md.User.id == id_user).one()
     hl = '{}'.format(50 * '-')
-
     total_sum = 0
+
     for debt in debts:
         uuid = Util.get_uuid()
         total_sum += debts_amount[debt.id]
