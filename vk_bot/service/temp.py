@@ -44,7 +44,6 @@ def temp_owe(key, data, options):
 def temp_pay(key, data, options):
     try:
         debts = {}
-        print(options)
         for op, amount in options.items():
             debts[data[op - 1]] = amount
     except IndexError:
