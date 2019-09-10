@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 class Config:
-    DEBUG = False
+    DEBUG = True if getenv('APP_MODE') == 'DEV' else False
     LOCALE_DIR = Path(__file__).parent.parent.joinpath('locales')
     DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
     LOG_FORMAT = '%(asctime)s:%(levelname)s %(message)s'
@@ -14,7 +14,7 @@ class Config:
     DB_PASSWORD = getenv('POSTGRES_PASSWORD')
 
     SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/bill_sharing'
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = True if getenv('APP_MODE') == 'DEV' else False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     VK_TOKEN = getenv('VK_TOKEN')
