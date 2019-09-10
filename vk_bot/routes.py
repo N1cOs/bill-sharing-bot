@@ -1,6 +1,5 @@
-import re
 import logging
-import vk_bot.service.scheduler
+import re
 
 from flask import request, json, abort
 
